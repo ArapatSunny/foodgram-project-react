@@ -2,9 +2,6 @@ from rest_framework import permissions
 
 
 class IsAuthenticatedOwnerOrAdminOnly(permissions.BasePermission):
-    """
-    Object-level permission to only allow owners of an object to edit it.
-    """
     message = "Access only for owner or admin!"
 
     def has_permission(self, request, view):

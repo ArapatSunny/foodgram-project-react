@@ -1,11 +1,11 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Exists, OuterRef
+
 from users.models import User
 
 
 class Tag(models.Model):
-    """Модель тега."""
     name = models.CharField(
         max_length=200,
         unique=True,
@@ -40,7 +40,6 @@ class Tag(models.Model):
 
 
 class Ingredient(models.Model):
-    """Модель для ингредиента."""
     name = models.CharField(
         max_length=200,
         db_index=True,
@@ -63,11 +62,6 @@ class Ingredient(models.Model):
 
 
 class RecipeQuerySet(models.QuerySet):
-    """
-    Получение дополнительных полей
-    is_favorite и is_in_shopping_cart
-    в queryset Recipe.
-    """
     def add_user_annotations(self, user_id):
         return self.annotate(
             is_favorited=Exists(
@@ -84,7 +78,6 @@ class RecipeQuerySet(models.QuerySet):
 
 
 class Recipe(models.Model):
-    """Модель рецепта."""
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -158,7 +151,6 @@ class TagRecipe(models.Model):
 
 
 class IngredientInRecipe(models.Model):
-    """В этой модели будут связаны id ингредиента и id рецепта."""
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
@@ -183,10 +175,6 @@ class IngredientInRecipe(models.Model):
 
 
 class UserRecipe(models.Model):
-    """
-    Промежуточная модель,
-    которая свяжет юзера и рецепт.
-    """
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -220,16 +208,8 @@ class UserRecipe(models.Model):
 
 
 class Favorite(UserRecipe):
-    """
-    Промежуточная модель,
-    которая свяжет юзера и его избранное.
-    """
     pass
 
 
 class ShoppingCart(UserRecipe):
-    """
-    Промежуточная модель,
-    которая свяжет юзера и его список покупок.
-    """
     pass
