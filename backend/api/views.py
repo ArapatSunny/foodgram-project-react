@@ -5,18 +5,16 @@ from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from rest_framework import filters, status
 from rest_framework.decorators import action
-from rest_framework.mixins import (CreateModelMixin, DestroyModelMixin,
-                                   ListModelMixin, RetrieveModelMixin,
-                                   UpdateModelMixin)
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.viewsets import GenericViewSet
 
 from foodgram.models import (Ingredient, IngredientInRecipe, Recipe,
                              ShoppingCart, Tag)
 from users.models import Subscription, User
-
 from .filters import RecipeFilter
+from .mixins import (
+    ListCreateRetrieveUpdateDestroyViewSet,
+    ListRetrieveViewSet)
 from .pagination import UserRecipePagination
 from .permissions import IsAuthenticatedOwnerOrAdminOnly
 from .serializers import (IngredientSerializer, RecipeMinifiedSerializer,
@@ -25,20 +23,7 @@ from .serializers import (IngredientSerializer, RecipeMinifiedSerializer,
                           UserDjoserCreateSerializer, UserDjoserSerializer)
 
 
-class ListCreateRetrieveUpdateDestroyViewSet(
-    CreateModelMixin, DestroyModelMixin,
-    ListModelMixin, RetrieveModelMixin,
-    UpdateModelMixin, GenericViewSet
-):
-    pass
-
-
 class UserViewSet(UserViewSet):
-    """
-    Get list of all users.
-    Create user. Get personal page.
-    For authenticated: subscribe option.
-    """
     queryset = User.objects.all().order_by(F('username'))
     http_method_names = ['get', 'post', 'delete']
     pagination_class = UserRecipePagination
@@ -97,16 +82,7 @@ class UserViewSet(UserViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class IngredientViewSet(
-    ListModelMixin, RetrieveModelMixin, GenericViewSet
-):
-    """
-    Get list of all ingredients.
-    Search by partial occurrence at the
-    beginning of the ingredient's name.
-    Note: to create/edit/delete
-    ingredient use Django's admin interface.
-    """
+class IngredientViewSet(ListRetrieveViewSet):
     queryset = Ingredient.objects.all().order_by(F('name'))
     serializer_class = IngredientSerializer
     filter_backends = (filters.SearchFilter, )
@@ -115,12 +91,7 @@ class IngredientViewSet(
     permission_classes = [IsAdminUser]
 
 
-class TagViewSet(ListModelMixin, RetrieveModelMixin, GenericViewSet):
-    """
-    Get list of all tags.
-    Note: to create/edit/delete
-    tag use Django's admin interface.
-    """
+class TagViewSet(ListRetrieveViewSet):
     queryset = Tag.objects.all().order_by(F('id'))
     serializer_class = TagSerializer
     http_method_names = ['get', ]
@@ -128,14 +99,6 @@ class TagViewSet(ListModelMixin, RetrieveModelMixin, GenericViewSet):
 
 
 class RecipeViewSet(ListCreateRetrieveUpdateDestroyViewSet):
-    """
-    Get list of all recipies.
-    Create/edit/delete recipe.
-    Filter by favorite, author,
-    shopping list and tags.
-    Add to favorite, shopping cart.
-    Option: download shopping list in txt format.
-    """
     queryset = Recipe.objects.all().add_user_annotations(F('user_id'))
     serializer_class = RecipeSerializer(partial=True)
     http_method_names = ['get', 'post', 'patch', 'delete']

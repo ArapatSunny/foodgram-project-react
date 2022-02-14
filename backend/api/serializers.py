@@ -11,8 +11,6 @@ from users.models import Subscription, User
 
 
 class TagSerializer(serializers.ModelSerializer):
-    """Отображение страницы со списком доступных тегов."""
-
     class Meta:
         model = Tag
         fields = ('id', 'name', 'color', 'slug')
@@ -20,15 +18,12 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class IngredientSerializer(serializers.ModelSerializer):
-    """Отображение страницы со списком доступных ингредиентов."""
-
     class Meta:
         model = Ingredient
         fields = ('id', 'name', 'measurement_unit', )
 
 
 class IngredientInRecipeSerializer(serializers.ModelSerializer):
-    """Отображение ингредиентов в рецептах."""
     id = serializers.IntegerField(source='ingredient.id')
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(
@@ -45,7 +40,6 @@ class IngredientInRecipeSerializer(serializers.ModelSerializer):
 
 
 class UserDjoserCreateSerializer(UserCreateSerializer):
-    """Класс для создания юзеров."""
     class Meta:
         model = User
         fields = (
@@ -69,7 +63,6 @@ class UserDjoserCreateSerializer(UserCreateSerializer):
 
 
 class UserDjoserSerializer(UserSerializer):
-    """Класс для отображения юзеров с полем is_subscribed."""
     is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
@@ -114,7 +107,6 @@ class SubscriptionSerializer(UserDjoserSerializer):
 
 
 class RecipeReadSerializer(serializers.ModelSerializer):
-    """Главная страница с рецептами."""
     author = UserDjoserSerializer(many=False, read_only=True)
     ingredients = IngredientInRecipeSerializer(
         source='ingredient_in_recipe', many=True, read_only=True
@@ -133,7 +125,6 @@ class RecipeReadSerializer(serializers.ModelSerializer):
 
 
 class TagRecipeSerializer(serializers.ModelSerializer):
-    """"Отображение тегов в рецептах."""
     id = serializers.IntegerField(source='tag.id')
     name = serializers.ReadOnlyField(source='tag.name')
     color = serializers.ReadOnlyField(source='tag.color')
@@ -152,7 +143,6 @@ class TagRecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeSerializer(WritableNestedModelSerializer):
-    """Создание рецептов."""
     author = UserDjoserSerializer(read_only=True)
     ingredients = IngredientInRecipeSerializer(many=True)
     tags = serializers.ListField(child=serializers.IntegerField())
@@ -219,26 +209,19 @@ class RecipeSerializer(WritableNestedModelSerializer):
         tags_data = validated_data.pop('tags')
         instance.ingredients.clear()
         instance.tags.clear()
-        instance.name = validated_data.get('name', instance.name)
-        instance.image = validated_data.get('image', instance.image)
-        instance.text = validated_data.get('text', instance.text)
-        instance.cooking_time = validated_data.get(
-            'cooking_time', instance.cooking_time)
-        instance.save()
+        super().update(instance, validated_data)
         self.get_or_set_ingredients_in_recipe(ingredients_data, instance)
         instance.tags.set(tags_data)
         return instance
 
 
 class RecipeMinifiedSerializer(serializers.ModelSerializer):
-    """Краткая версия описания рецептов."""
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
 
 
 class SubscriptionCreateSerializer(serializers.ModelSerializer):
-    """Создание подписки."""
     class Meta:
         model = Subscription
         fields = '__all__'
