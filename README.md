@@ -21,6 +21,8 @@ djoser==2.1.0
 drf-extra-fields==3.2.1
 drf-writable-nested==0.6.3
 drf-yasg==1.20.0
+gunicorn==20.0.4
+psycopg2-binary==2.9.3
 
 Модели: Ingredient, Tag, Recipe, Favorite, ShoppingCart, IngredientInRecipe
 
