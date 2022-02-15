@@ -8,19 +8,17 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
-from foodgram.models import (Ingredient, IngredientInRecipe, Recipe,
-                             ShoppingCart, Tag)
-from users.models import Subscription, User
 from .filters import RecipeFilter
-from .mixins import (
-    ListCreateRetrieveUpdateDestroyViewSet,
-    ListRetrieveViewSet)
+from .foodgram.models import (Ingredient, IngredientInRecipe, Recipe,
+                              ShoppingCart, Tag)
+from .mixins import ListCreateRetrieveUpdateDestroyViewSet, ListRetrieveViewSet
 from .pagination import UserRecipePagination
 from .permissions import IsAuthenticatedOwnerOrAdminOnly
 from .serializers import (IngredientSerializer, RecipeMinifiedSerializer,
                           RecipeReadSerializer, RecipeSerializer,
                           SubscriptionSerializer, TagSerializer,
                           UserDjoserCreateSerializer, UserDjoserSerializer)
+from .users.models import Subscription, User
 
 
 class UserViewSet(UserViewSet):
@@ -55,8 +53,8 @@ class UserViewSet(UserViewSet):
         user = request.user
         author = get_object_or_404(User, pk=id)
         subscription = Subscription.objects.filter(
-                user=user, author=author
-            )
+            user=user, author=author
+        )
         if request.method == 'POST':
             if subscription:
                 return Response(
@@ -127,10 +125,9 @@ class RecipeViewSet(ListCreateRetrieveUpdateDestroyViewSet):
             recipe__foodgram_shoppingcarts__user=user
         ).values(
             'ingredient__name',
-            'ingredient__measurement_unit'
-            ).annotate(
+            'ingredient__measurement_unit').annotate(
                 total_amount=Sum('amount')
-                )
+        )
         lines = []
         for ingredient in ingredients:
             name = ingredient['ingredient__name']

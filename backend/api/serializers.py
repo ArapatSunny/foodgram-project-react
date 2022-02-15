@@ -2,11 +2,10 @@ from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from drf_writable_nested.serializers import WritableNestedModelSerializer
-from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
-
 from foodgram.models import (Ingredient, IngredientInRecipe, Recipe, Tag,
                              TagRecipe)
+from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 from users.models import Subscription, User
 
 
