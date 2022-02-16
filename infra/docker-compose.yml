@@ -1,40 +1,35 @@
 version: '3.3'
-services:
 
+services:
   db:
     image: postgres:13.0-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-    environment:
-      DB_NAME: ${DB_NAME}
-      DB_HOST: ${DB_HOST}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     env_file:
-      # - ../backend/backend/.env
       - ./.env
+  
   backend:
-    # build:
-    #   context: ../backend/
-    image: praktikum05012022/foodgram:latest
+    build:
+      context: ../backend/
+    # image: praktikum05012022/foodgram:latest  # set version
     restart: always
-    depends_on:
-      - db
-    env_file:
-      # - ../backend/backend/.env
-      - ./.env
     volumes:
       - static_value:/app/static-files/
       - media_value:/app/media-files/
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+  
   frontend:
     # build:
-    #   context: ../frontend
-    #   dockerfile: Dockerfile
-    image: praktikum05012022/foodgram_frontend:v1.0.6.7
+    #   context: ../frontend/
+    image: praktikum05012022/foodgram_frontend:v1.0.0.0
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
       - backend
+  
   nginx:
     image: nginx:1.19.3
     ports:
@@ -46,7 +41,6 @@ services:
       - static_value:/var/html/static-files/
       - media_value:/var/html/media-files/
     depends_on:
-      - backend
       - frontend
 
 volumes:
