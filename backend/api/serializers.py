@@ -144,8 +144,8 @@ class TagRecipeSerializer(serializers.ModelSerializer):
 
 class RecipeSerializer(WritableNestedModelSerializer):
     author = UserDjoserSerializer(read_only=True)
-    ingredients = IngredientInRecipeSerializer(many=True)
-    tags = serializers.ListField(child=serializers.IntegerField())
+    ingredients = IngredientInRecipeSerializer(many=True, read_only=True)
+    tags = TagSerializer(many=True, read_only=True)
     image = Base64ImageField()
 
     class Meta:
