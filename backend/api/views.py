@@ -86,6 +86,7 @@ class IngredientViewSet(ListRetrieveViewSet):
     serializer_class = IngredientSerializer
     filter_backends = (filters.SearchFilter, )
     http_method_names = ['get', ]
+    lookup_fields = ['id']
     search_fields = ('^name', )
     # permission_classes = [IsAdminUser]
 
@@ -94,6 +95,7 @@ class TagViewSet(ListRetrieveViewSet):
     queryset = Tag.objects.all().order_by(F('id'))
     serializer_class = TagSerializer
     http_method_names = ['get', ]
+    lookup_fields = ['id']
     # permission_classes = [IsAdminUser]
 
 
