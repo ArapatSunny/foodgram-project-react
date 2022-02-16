@@ -8,17 +8,18 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
-from .filters import RecipeFilter
-from .foodgram.models import (Ingredient, IngredientInRecipe, Recipe,
-                              ShoppingCart, Tag)
-from .mixins import ListCreateRetrieveUpdateDestroyViewSet, ListRetrieveViewSet
-from .pagination import UserRecipePagination
-from .permissions import IsAuthenticatedOwnerOrAdminOnly
-from .serializers import (IngredientSerializer, RecipeMinifiedSerializer,
-                          RecipeReadSerializer, RecipeSerializer,
-                          SubscriptionSerializer, TagSerializer,
-                          UserDjoserCreateSerializer, UserDjoserSerializer)
-from .users.models import Subscription, User
+from api.filters import RecipeFilter
+from api.mixins import (ListCreateRetrieveUpdateDestroyViewSet,
+                        ListRetrieveViewSet)
+from api.pagination import UserRecipePagination
+from api.permissions import IsAuthenticatedOwnerOrAdminOnly
+from api.serializers import (IngredientSerializer, RecipeMinifiedSerializer,
+                             RecipeReadSerializer, RecipeSerializer,
+                             SubscriptionSerializer, TagSerializer,
+                             UserDjoserCreateSerializer, UserDjoserSerializer)
+from foodgram.models import (Ingredient, IngredientInRecipe, Recipe,
+                             ShoppingCart, Tag)
+from users.models import Subscription, User
 
 
 class UserViewSet(UserViewSet):
