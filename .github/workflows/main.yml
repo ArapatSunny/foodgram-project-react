@@ -42,7 +42,7 @@ jobs:
         context: ./backend/
         # file: ./backend/Dockerfile
         push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
+        tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:v1.0.8.9
 
   deploy:
     runs-on: ubuntu-latest
