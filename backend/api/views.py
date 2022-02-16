@@ -87,14 +87,14 @@ class IngredientViewSet(ListRetrieveViewSet):
     filter_backends = (filters.SearchFilter, )
     http_method_names = ['get', ]
     search_fields = ('^name', )
-    permission_classes = [IsAdminUser]
+    # permission_classes = [IsAdminUser]
 
 
 class TagViewSet(ListRetrieveViewSet):
     queryset = Tag.objects.all().order_by(F('id'))
     serializer_class = TagSerializer
     http_method_names = ['get', ]
-    permission_classes = [IsAdminUser]
+    # permission_classes = [IsAdminUser]
 
 
 class RecipeViewSet(ListCreateRetrieveUpdateDestroyViewSet):
