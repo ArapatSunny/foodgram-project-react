@@ -1,40 +1,42 @@
-from django.db.models import F, Sum
+from django.db.models import F, Sum, Exists, OuterRef
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from rest_framework import filters, status
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from foodgram.models import (Ingredient, IngredientInRecipe, Recipe,
+from foodgram.models import (Favorite, Ingredient,
+                             IngredientInRecipe, Recipe,
                              ShoppingCart, Tag)
 from users.models import Subscription, User
 
-from .filters import RecipeFilter
+from .filters import IngredientFilter, RecipeFilter
 from .mixins import ListCreateRetrieveUpdateDestroyViewSet, ListRetrieveViewSet
 from .pagination import UserRecipePagination
-from .permissions import IsAuthenticatedOwnerOrAdminOnly
+from .permissions import IsAdminOrReadOnly
 from .serializers import (IngredientSerializer, RecipeMinifiedSerializer,
                           RecipeReadSerializer, RecipeSerializer,
                           SubscriptionSerializer, TagSerializer,
-                          UserDjoserCreateSerializer, UserDjoserSerializer)
+                          UserDjoserSerializer)
 
 
 class UserViewSet(UserViewSet):
-    queryset = User.objects.all().order_by(F('username'))
     http_method_names = ['get', 'post', 'delete']
     pagination_class = UserRecipePagination
 
-    def get_serializer_class(self):
-        if self.request.method == 'POST':
-            return UserDjoserCreateSerializer
-        return UserDjoserSerializer
+    def get_queryset(self):
+        return User.objects.all().annotate(
+            is_subscribed=Exists(Subscription.objects.filter(
+                user=self.request.user, author__pk=OuterRef('pk'))
+            )
+        )
 
     @action(
         detail=False,
-        permission_classes=[IsAuthenticatedOwnerOrAdminOnly]
+        permission_classes=[IsAuthenticated]
     )
     def subscriptions(self, request):
         queryset = User.objects.filter(
@@ -48,7 +50,7 @@ class UserViewSet(UserViewSet):
     @action(
         detail=True,
         methods=['POST', 'DELETE'],
-        permission_classes=[IsAuthenticatedOwnerOrAdminOnly]
+        permission_classes=[IsAuthenticated]
     )
     def subscribe(self, request, id):
         user = request.user
@@ -84,11 +86,11 @@ class UserViewSet(UserViewSet):
 class IngredientViewSet(ListRetrieveViewSet):
     queryset = Ingredient.objects.all().order_by(F('name'))
     serializer_class = IngredientSerializer
-    filter_backends = (filters.SearchFilter, )
+    filter_backends = (IngredientFilter, )
     http_method_names = ['get', ]
-    lookup_fields = ['id']
+    lookup_fields = ['id', ]
     search_fields = ('^name', )
-    # permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminOrReadOnly]
 
 
 class TagViewSet(ListRetrieveViewSet):
@@ -96,17 +98,18 @@ class TagViewSet(ListRetrieveViewSet):
     serializer_class = TagSerializer
     http_method_names = ['get', ]
     lookup_fields = ['id']
-    # permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminOrReadOnly]
 
 
 class RecipeViewSet(ListCreateRetrieveUpdateDestroyViewSet):
-    queryset = Recipe.objects.all().add_user_annotations(F('user_id'))
-    serializer_class = RecipeSerializer(partial=True)
+    queryset = Recipe.objects.all()
     http_method_names = ['get', 'post', 'patch', 'delete']
     pagination_class = UserRecipePagination
-    permission_classes = [IsAuthenticatedOwnerOrAdminOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_class = RecipeFilter
+
+    def get_queryset(self):
+        return self.queryset.add_user_annotations(self.request.user.id)
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -141,41 +144,40 @@ class RecipeViewSet(ListCreateRetrieveUpdateDestroyViewSet):
         return response
 
     @staticmethod
-    def post_or_delete_object(obj, recipe, request):
+    def post_or_delete_object(model, recipe, request):
+        current_model = model.objects.filter(
+            user=request.user, recipe=recipe
+        )
         if request.method == 'POST':
-            if obj.objects.filter(
-                user=request.user, recipe=recipe
-            ).exists():
+            if current_model.exists():
                 return Response(
                     {'errors': 'Ошибка добавления. Уже есть в списке'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            obj.objects.create(user=request.user, recipe=recipe)
+            model.objects.create(user=request.user, recipe=recipe)
             serializer = RecipeMinifiedSerializer(recipe)
             return Response(
                 serializer.data, status=status.HTTP_201_CREATED
             )
-        obj.objects.filter(
-            user=request.user, recipe=recipe
-        ).delete()
+        current_model.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
         detail=True,
-        permission_classes=[IsAuthenticatedOwnerOrAdminOnly],
+        permission_classes=[IsAuthenticated],
         methods=['POST', 'DELETE']
     )
     def shopping_cart(self, request, pk):
         recipe = get_object_or_404(Recipe, pk=pk)
         return self.post_or_delete_object(
-            obj=ShoppingCart, recipe=recipe, request=request)
+            model=ShoppingCart, recipe=recipe, request=request)
 
     @action(
         detail=True,
-        permission_classes=[IsAuthenticatedOwnerOrAdminOnly],
+        permission_classes=[IsAuthenticated],
         methods=['POST', 'DELETE']
     )
     def favorite(self, request, pk):
         recipe = get_object_or_404(Recipe, pk=pk)
         return self.post_or_delete_object(
-            obj=ShoppingCart, recipe=recipe, request=request)
+            model=Favorite, recipe=recipe, request=request)
