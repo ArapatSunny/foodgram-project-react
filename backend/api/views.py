@@ -16,7 +16,7 @@ from users.models import Subscription, User
 from .filters import IngredientFilter, RecipeFilter
 from .mixins import ListCreateRetrieveUpdateDestroyViewSet, ListRetrieveViewSet
 from .pagination import UserRecipePagination
-from .permissions import IsAdminOrReadOnly
+from .permissions import IsAdminOrReadOnly, IsAuthenticatedOrReadOnly
 from .serializers import (IngredientSerializer, RecipeMinifiedSerializer,
                           RecipeReadSerializer, RecipeSerializer,
                           SubscriptionSerializer, TagSerializer,
@@ -103,6 +103,7 @@ class TagViewSet(ListRetrieveViewSet):
 
 class RecipeViewSet(ListCreateRetrieveUpdateDestroyViewSet):
     queryset = Recipe.objects.all()
+    permission_classes = [IsAuthenticatedOrReadOnly]
     http_method_names = ['get', 'post', 'patch', 'delete']
     pagination_class = UserRecipePagination
     filter_backends = [DjangoFilterBackend]
