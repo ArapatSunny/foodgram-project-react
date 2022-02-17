@@ -23,6 +23,8 @@ drf-writable-nested==0.6.3
 drf-yasg==1.20.0
 gunicorn==20.0.4
 psycopg2-binary==2.9.3
+PostgreSQL
+nginx
 
 Модели: Ingredient, Tag, Recipe, Favorite, ShoppingCart, IngredientInRecipe
 
@@ -34,39 +36,31 @@ git clone https://github.com/ArapatSunny/foodgram-project-react.git
 ```
 
 ```
-cd backend
+cd infra
 ```
 
-Cоздать и активировать виртуальное окружение:
+Запуск контейнеров:
 
 ```
-python3 -m venv env
-```
-
-```
-source env/bin/activate
+docker-compose up -d --build
 ```
 
 ```
-python3 -m pip install --upgrade pip
+docker-compose exec backend python manage.py migrate
 ```
 
-Установить зависимости из файла requirements.txt:
-
 ```
-pip install -r requirements.txt
+docker-compose exec backend python manage.py collectstatic --no-input
 ```
 
-Выполнить миграции:
+Наполнение базы данными для рецептов
 
 ```
-python3 manage.py migrate
+docker-compose exec backend python manage.py import --path '/app/data/ingredients.csv' --model_name 'foodgram.Igredient'
 ```
 
-Запустить проект:
-
 ```
-python3 manage.py runserver
+docker-compose exec backend python manage.py import --path '/app/data/tags.csv' --model_name 'foodgram.Tag'
 ```
 
 
@@ -82,3 +76,20 @@ http://api/recipes/
 ```
 http://api/users/subscription
 ```
+IP-адрес сервера: 62.84.124.46
+
+Доступ для администратора:
+login: admin
+password: foodgram
+
+Тестовые пользователи:
+  "email": "cate@yandex.ru"
+  "password": "Cateeee123"
+
+  "email": "nikita@ya.ru"
+  "password": "vital555" 
+
+Автор проекта:
+Ансарова Арапат
+Студент курса ЯндексПрактикум Python-разработчик
+Факультет Бэкенд.
