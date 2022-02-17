@@ -1,3 +1,5 @@
+![example workflow](https://github.com/ArapatSunny/foodgram-project-react/actions/workflows/main/badge.svg)
+
 # praktikum_new_diplom
 
 ### Сайт Foodgram, «Продуктовый помощник».
@@ -56,7 +58,7 @@ docker-compose exec backend python manage.py collectstatic --no-input
 Наполнение базы данными для рецептов
 
 ```
-docker-compose exec backend python manage.py import --path '/app/data/ingredients.csv' --model_name 'foodgram.Igredient'
+docker-compose exec backend python manage.py import --path '/app/data/ingredients.csv' --model_name 'foodgram.Ingredient'
 ```
 
 ```
