@@ -9,9 +9,9 @@ services:
       - ./.env
   
   backend:
-    # build:
-    #   context: ../backend/
-    image: praktikum05012022/foodgram:latest  # set version
+    build:
+      context: ../backend/
+    # image: praktikum05012022/foodgram:latest  # set version
     restart: always
     volumes:
       - static_value:/app/static-files/
