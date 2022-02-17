@@ -8,8 +8,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-# DEBUG = os.getenv('DEBUG', default=False)
-DEBUG = True
+DEBUG = os.getenv('DEBUG', default=False)
 
 ALLOWED_HOSTS = ['*']
 
@@ -111,8 +110,6 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
     ),
-    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    # 'PAGE_SIZE': 6,
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
     ],
@@ -121,15 +118,15 @@ REST_FRAMEWORK = {
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 DJOSER = {
-    "LOGIN_FIELD": "email",
+    'LOGIN_FIELD': 'email',
     'SERIALIZERS': {
         'user': 'api.serializers.UserDjoserSerializer',
-        'current_user': 'api.serializers.UserDjoserCreateSerializer',
+        'current_user': 'api.serializers.UserDjoserSerializer',
         'user_create': 'api.serializers.UserDjoserCreateSerializer',
     },
     'PERMISSIONS': {
         'user_list': ['rest_framework.permissions.AllowAny'],
-        'user': ['rest_framework.permissions.AllowAny'],
+        'user': ['rest_framework.permissions.IsAuthenticated'],
     },
     "HIDE_USERS": False,
 }
