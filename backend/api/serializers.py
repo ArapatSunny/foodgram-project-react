@@ -63,7 +63,7 @@ class UserDjoserCreateSerializer(UserCreateSerializer):
 
 
 class UserDjoserSerializer(UserSerializer):
-    is_subscribed = serializers.SerializerMethodField()
+    is_subscribed = serializers.BooleanField(default=False)
 
     class Meta:
         model = User
@@ -73,11 +73,6 @@ class UserDjoserSerializer(UserSerializer):
             'is_subscribed',
         )
 
-    def get_is_subscribed(self, obj):
-        return Subscription.objects.filter(
-            user=self.context.get('user'), author=obj
-        ).exists()
-
 
 class SubscriptionSerializer(UserDjoserSerializer):
     recipes = serializers.SerializerMethodField(read_only=True)
@@ -85,6 +80,7 @@ class SubscriptionSerializer(UserDjoserSerializer):
 
     class Meta:
         model = User
+        depth = 1
         fields = (
             'email', 'id', 'username', 'first_name',
             'last_name', 'is_subscribed',
@@ -93,17 +89,17 @@ class SubscriptionSerializer(UserDjoserSerializer):
 
     def get_recipes(self, obj):
         request = self.context.get('request')
-        limit = request.query_params.get('recipes_limit')
+        limit = request.GET.get("recipes_limit", None)
         if limit is not None:
-            recipes = obj.recipes.all()[:int(limit)]
+            recipes = Recipe.objects.filter(author=obj)[:int(limit)]
         else:
-            recipes = obj.recipes.all()
+            recipes = Recipe.objects.filter(author=obj)
         return RecipeMinifiedSerializer(
             recipes, many=True, read_only=True
         ).data
 
     def get_recipes_count(self, obj):
-        return obj.recipes.all().count()
+        return Recipe.objects.filter(author=obj).count()
 
 
 class RecipeReadSerializer(serializers.ModelSerializer):
@@ -144,8 +140,8 @@ class TagRecipeSerializer(serializers.ModelSerializer):
 
 class RecipeSerializer(WritableNestedModelSerializer):
     author = UserDjoserSerializer(read_only=True)
-    ingredients = IngredientInRecipeSerializer(many=True, read_only=True)
-    tags = TagSerializer(many=True, read_only=True)
+    ingredients = IngredientInRecipeSerializer(many=True)
+    tags = tags = serializers.ListField(child=serializers.IntegerField())
     image = Base64ImageField()
 
     class Meta:
