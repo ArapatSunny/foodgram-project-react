@@ -5,7 +5,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import (IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
 from foodgram.models import (Favorite, Ingredient,
@@ -16,7 +17,7 @@ from users.models import Subscription, User
 from .filters import IngredientFilter, RecipeFilter
 from .mixins import ListCreateRetrieveUpdateDestroyViewSet, ListRetrieveViewSet
 from .pagination import UserRecipePagination
-from .permissions import IsAdminOrReadOnly, IsAuthenticatedOrReadOnly
+from .permissions import IsAdminOrReadOnly
 from .serializers import (IngredientSerializer, RecipeMinifiedSerializer,
                           RecipeReadSerializer, RecipeSerializer,
                           SubscriptionSerializer, TagSerializer,
@@ -107,7 +108,7 @@ class RecipeViewSet(ListCreateRetrieveUpdateDestroyViewSet):
     http_method_names = ['get', 'post', 'patch', 'delete']
     pagination_class = UserRecipePagination
     filter_backends = [DjangoFilterBackend]
-    filterset_class = RecipeFilter
+    filter_class = RecipeFilter
 
     def get_queryset(self):
         return self.queryset.add_user_annotations(self.request.user.id)
