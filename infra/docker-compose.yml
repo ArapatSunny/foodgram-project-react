@@ -9,9 +9,7 @@ services:
       - ./.env
   
   backend:
-    # build:
-    #   context: ../backend/
-    image: praktikum05012022/foodgram:v1.0.12.13  # set version
+    image: praktikum05012022/foodgram:v1.0.13.14
     restart: always
     volumes:
       - static_value:/app/static-files/
@@ -22,8 +20,6 @@ services:
       - db
   
   frontend:
-    # build:
-    #   context: ../frontend/
     image: praktikum05012022/foodgram_frontend:v1.0.0.0
     volumes:
       - ../frontend/:/app/result_build/
