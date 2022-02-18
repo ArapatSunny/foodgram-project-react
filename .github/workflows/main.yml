@@ -41,7 +41,7 @@ jobs:
       with:
         context: ./backend/
         push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:v1.0.12.13
+        tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:v1.0.13.14
 
   deploy:
     runs-on: ubuntu-latest
