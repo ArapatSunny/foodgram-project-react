@@ -1,4 +1,4 @@
-from django.db.models import F, Sum, Exists, OuterRef
+from django.db.models import F, Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -30,9 +30,7 @@ class UserViewSet(UserViewSet):
 
     def get_queryset(self):
         return User.objects.all().annotate(
-            is_subscribed=Exists(Subscription.objects.filter(
-                user=self.request.user, author__pk=OuterRef('pk'))
-            )
+            is_subscribed=self.request.user.subscribed_to
         )
 
     @action(
@@ -50,7 +48,7 @@ class UserViewSet(UserViewSet):
 
     @action(
         detail=True,
-        methods=['POST', 'DELETE'],
+        methods=['post', 'delete'],
         permission_classes=[IsAuthenticated]
     )
     def subscribe(self, request, id):
