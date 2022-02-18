@@ -1,4 +1,4 @@
-![example workflow](https://github.com/ArapatSunny/foodgram-project-react/actions/workflows/main/badge.svg)
+![example workflow](https://github.com/ArapatSunny/foodgram-project-react/actions/workflows/main.yml/badge.svg)
 
 # praktikum_new_diplom
 
