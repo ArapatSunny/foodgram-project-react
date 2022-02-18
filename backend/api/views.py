@@ -1,4 +1,4 @@
-from django.db.models import F, Sum
+from django.db.models import F, Sum, Exists, OuterRef
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -27,11 +27,6 @@ from .serializers import (IngredientSerializer, RecipeMinifiedSerializer,
 class UserViewSet(UserViewSet):
     http_method_names = ['get', 'post', 'delete']
     pagination_class = UserRecipePagination
-
-    def get_queryset(self):
-        return User.objects.all().annotate(
-            is_subscribed=self.request.user.subscribed_to
-        )
 
     @action(
         detail=False,

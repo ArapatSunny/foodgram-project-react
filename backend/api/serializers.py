@@ -63,7 +63,7 @@ class UserDjoserCreateSerializer(UserCreateSerializer):
 
 
 class UserDjoserSerializer(UserSerializer):
-    is_subscribed = serializers.BooleanField(default=False)
+    is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -72,6 +72,13 @@ class UserDjoserSerializer(UserSerializer):
             'last_name',
             'is_subscribed',
         )
+
+    def get_is_subscribed(self, obj):
+        user = self.context['request'].user
+        return (
+            user.is_authenticated
+            and Subscription.objects.filter(
+                user=user, author=obj).exists())
 
 
 class SubscriptionSerializer(UserDjoserSerializer):
