@@ -9,7 +9,7 @@ services:
       - ./.env
   
   backend:
-    image: praktikum05012022/foodgram:v1.0.13.14
+    image: praktikum05012022/foodgram:v1.0.14.15
     restart: always
     volumes:
       - static_value:/app/static-files/
