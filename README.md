@@ -58,6 +58,10 @@ docker-compose exec backend python manage.py collectstatic --no-input
 Наполнение базы данными для рецептов
 
 ```
+cd ..
+```
+
+```
 docker-compose exec backend python manage.py import --path '/app/data/ingredients.csv' --model_name 'foodgram.Ingredient'
 ```
 
