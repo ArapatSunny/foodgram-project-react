@@ -10,9 +10,8 @@ class User(AbstractUser):
     last_name = models.CharField(max_length=150, blank=False)
     role = models.CharField(max_length=300, choices=ROLES, default=ROLES[0][0])
 
-    LOGIN_FIELD = ['email']
-
-    REQUIRED_FIELDS = ['password', 'first_name', 'last_name', ]
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username', ]
 
     objects = UserManager()
 
