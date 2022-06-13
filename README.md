@@ -6,11 +6,12 @@
 ## Описание:
 На этом сервисе пользователи смогут публиковать рецепты, подписываться на публикации других пользователей, добавлять понравившиеся рецепты в список «Избранное», а перед походом в магазин скачивать сводный список продуктов, необходимых для приготовления одного или нескольких выбранных блюд.
 
-## Запуск проекта
-В папке infra выполните команду docker-compose up.
-При выполнении этой команды сервис frontend, описанный в docker-compose.yml подготовит файлы, необходимые для работы фронтенд-приложения, а затем прекратит свою работу.
-Проект запустится на адресе http://localhost, увидеть спецификацию API вы сможете по адресу http://localhost/api/docs/
-Как будет выглядеть ваше приложение, можно посмотреть на Figma.com
+## Краткое описание запуска проекта
+Для работы проекта потребуются установленные Docker и Docker-compose.
+При выполнении команды docker-compose up в папке infra запустится сервис frontend, описанный в docker-compose.yml. Он подготовит файлы, необходимые для работы фронтенд-приложения, а затем прекратит свою работу.
+Проект запустится по адресу http://localhost/
+
+Увидеть спецификацию API вы можете в репозитории в папке docs.
 
 # Сервисы и страницы проекта:
 Главная страница, Страница рецепта, Страница пользователя, Подписка на авторов, Список избранного, Список покупок, Фильтрация по тегам, Регистрация и авторизация
@@ -30,39 +31,47 @@ nginx
 
 Модели: Ingredient, Tag, Recipe, Favorite, ShoppingCart, IngredientInRecipe
 
+
 ### Как запустить проект:
-Клонировать репозиторий и перейти в него в командной строке:
+Клонировать репозиторий:
 
 ```
 git clone https://github.com/ArapatSunny/foodgram-project-react.git
 ```
-
+перейти в директорию ../foodgram-project-react/infra/
 ```
 cd infra
 ```
-
-Запуск контейнеров:
-
+запустить сборку контейнеров:
 ```
 docker-compose up -d --build
 ```
-
+Копирование списка ингредиентов и тегов в контейнер с проектом:
 ```
-docker-compose exec backend python manage.py migrate
+docker cp ../data/ infra_backend_1:/app
 ```
-
+вход в контейнер с проектом:
 ```
-docker-compose exec backend python manage.py collectstatic --no-input
+docker-compose exec backend bash
 ```
-
-Наполнение базы данными для рецептов
-
+применение миграций:
 ```
-docker-compose exec backend python manage.py import --path '/app/data/ingredients.csv' --model_name 'foodgram.Ingredient'
+python manage.py migrate
 ```
-
+сбор статики
 ```
-docker-compose exec backend python manage.py import --path '/app/data/tags.csv' --model_name 'foodgram.Tag'
+python manage.py collectstatic --no-input
+```
+создание администратора:
+```
+python manage.py createsuperuser
+```
+наполнение базы данных ингредиентами и тегами
+```
+python manage.py import --path './data/ingredients.csv' --model_name 'foodgram.Ingredient'
+```
+```
+python manage.py import --path './data/tags.csv' --model_name 'foodgram.Tag'
 ```
 
 
