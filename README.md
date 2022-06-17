@@ -11,7 +11,7 @@
 При выполнении команды docker-compose up в папке infra запустится сервис frontend, описанный в docker-compose.yml. Он подготовит файлы, необходимые для работы фронтенд-приложения, а затем прекратит свою работу.
 Проект запустится по адресу http://localhost/
 
-Увидеть спецификацию API вы можете в репозитории в папке docs.
+Увидеть спецификацию API: http://localhost/api/docs/
 
 # Сервисы и страницы проекта:
 Главная страница, Страница рецепта, Страница пользователя, Подписка на авторов, Список избранного, Список покупок, Фильтрация по тегам, Регистрация и авторизация
@@ -56,7 +56,10 @@ docker-compose exec backend bash
 ```
 применение миграций:
 ```
-python manage.py migrate
+python manage.py migrate</br>
+python manage.py makemigrations</br>
+python manage.py migrate</br>
+
 ```
 сбор статики
 ```
@@ -78,29 +81,24 @@ python manage.py import --path './data/tags.csv' --model_name 'foodgram.Tag'
 ### Примеры. Некоторые примеры запросов к API.
 
 Запрос на получение списка рецептов:
-
 ```
 http://api/recipes/
 ```
-
 Запрос на получение списка подписок
 ```
 http://api/users/subscription
 ```
-IP-адрес сервера: 62.84.124.46
 
-Доступ для администратора:
-login: admin
-password: foodgram
-
-Тестовые пользователи:
-  "email": "cate@yandex.ru"
-  "password": "Cateeee123"
-
-  "email": "nikita@ya.ru"
-  "password": "vital555" 
-
-Автор проекта:
-Ансарова Арапат
-Студент курса ЯндексПрактикум Python-разработчик
-Факультет Бэкенд.
+### Пример проекта 
+IP-адрес сервера: 62.84.124.46</br>
+<ul>Тестовые пользователи:
+<li>login: cate@yandex.ru
+password: Cateeee123</li>
+<li>email: nikita@ya.ru
+password: vital555</li>
+</ul>
+</br>
+Автор проекта:<br/>
+Ансарова Арапат<br/>
+Студент курса ЯндексПрактикум Python-разработчик<br/>
+Факультет Бэкенд.<br/>

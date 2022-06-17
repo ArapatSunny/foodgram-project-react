@@ -136,3 +136,8 @@ venv/
 backend/backend/.env
 ./infra/.env
 .vscode/
+
+./data/fixtures.json
+./data/fixtures2.json
+./data/recipes
+./docker-compose_down.txt
