@@ -89,15 +89,6 @@ http://api/recipes/
 http://api/users/subscription
 ```
 
-### Пример проекта 
-IP-адрес сервера: 62.84.124.46</br>
-<ul>Тестовые пользователи:
-<li>login: cate@yandex.ru
-password: Cateeee123</li>
-<li>email: nikita@ya.ru
-password: vital555</li>
-</ul>
-</br>
 Автор проекта:<br/>
 Ансарова Арапат<br/>
 Студент курса ЯндексПрактикум Python-разработчик<br/>
